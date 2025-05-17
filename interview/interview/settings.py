@@ -171,3 +171,10 @@ CORS_ALLOW_HEADERS = [
 
 # 同时添加允许的hosts
 ALLOWED_HOSTS = ['*']  # 开发阶段可以这样设置
+
+# 分页器
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 6,  # 每页显示6条
+}
+

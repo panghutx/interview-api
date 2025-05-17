@@ -5,6 +5,7 @@ from django.shortcuts import render
 # views.py
 
 from rest_framework import viewsets, status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.decorators import action, renderer_classes, api_view
 from .models import InterviewQuestion
@@ -15,19 +16,35 @@ class InterviewQuestionViewSet(viewsets.ModelViewSet):
     queryset = InterviewQuestion.objects.filter(is_active=True)
     serializer_class = InterviewQuestionSerializer
 
+    # @api_view(['GET'])
+    # @renderer_classes([JSONRenderer])
+    # def get_all_questions(request):
+    #     """获取所有试题"""
+    #     print("请求方法:", request.method)  # 应该是 GET
+    #     if request.method == 'OPTIONS':
+    #         print("这是 OPTIONS 预检请求")
+    #         return Response(status=200)
+    #     elif request.method == 'GET':
+    #         print("这是真正的 GET 请求")
+    #         questions = InterviewQuestion.objects.filter(is_active=True)
+    #         serializer = InterviewQuestionSerializer(questions, many=True)
+    #         return Response(serializer.data)
+
     @api_view(['GET'])
     @renderer_classes([JSONRenderer])
     def get_all_questions(request):
-        """获取所有试题"""
-        print("请求方法:", request.method)  # 应该是 GET
-        if request.method == 'OPTIONS':
-            print("这是 OPTIONS 预检请求")
-            return Response(status=200)
-        elif request.method == 'GET':
-            print("这是真正的 GET 请求")
-            questions = InterviewQuestion.objects.filter(is_active=True)
-            serializer = InterviewQuestionSerializer(questions, many=True)
-            return Response(serializer.data)
+        questions = InterviewQuestion.objects.filter(is_active=True).order_by('-id')
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 6  # 每页6条
+
+        page = paginator.paginate_queryset(questions, request)
+        if page is not None:
+            serializer = InterviewQuestionSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+        serializer = InterviewQuestionSerializer(questions, many=True)
+        return Response(serializer.data)
 
     @api_view(['POST'])
     def create_question(request):
