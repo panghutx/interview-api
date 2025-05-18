@@ -1,1 +1,6 @@
 *.pyc
+04980744f74f4ec36ad5a9d5fec8876f_venv/
+__pycache__/
+logs/
+nohup.out
+venv/
