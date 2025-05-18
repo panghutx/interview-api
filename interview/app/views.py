@@ -49,10 +49,12 @@ class InterviewQuestionViewSet(viewsets.ModelViewSet):
     @api_view(['POST'])
     def create_question(request):
         """新增试题"""
+        print("Request Data:", request.data)
         serializer = InterviewQuestionSerializer(data=request.data)
+        print(request)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @api_view(['GET'])
